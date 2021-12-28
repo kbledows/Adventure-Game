@@ -6,7 +6,7 @@ def main():
     print("Hello World!")
     print("Please enter a name")
     name = input()
-    print("please enter a sex")
+    print("Please enter a sex")
     sex = input()
 
     p = Character(name,sex)

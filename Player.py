@@ -23,6 +23,9 @@ class Character:
     def set_coordinates(self,x,y):
         self.coordinates['xCoord'] = x
         self.coordinates['yCoord'] = y
+        
+    def get_sex(self):
+        return self.sex
     
 
 
