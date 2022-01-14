@@ -43,8 +43,5 @@ class Character:
     def set_location(self, place):
         self.location = place
 
-    def examine(self):
-        pass
-
 
 # Notes: Perhaps make a general class that is "Mob" with HP stat... could be useful.

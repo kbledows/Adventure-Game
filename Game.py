@@ -58,27 +58,17 @@ def help_menu():
 
 
 ##### MAP #####
-"""
-   1   2  3  4  5     #PLAYER STARTS AT [ ]
-  ----------------
-a |  |  |  |  |  |
-  ----------------
-b |  |  |  |  |  |
-  ----------------
-c |  |  |  |  |  |
-  ----------------
-d |  |  |  |  |  |
-  ----------------
-"""
 
-ZONENAME = ''
+ZONENAME = 'zonename'
 DESCRIPTION = 'description'
+ITEMS = 'items'
 EXAMINE = 'examine', 'look'
 SOLVED = False
 UP = 'up', 'north'
 DOWN = 'down', 'south'
 LEFT = 'left', 'west'
 RIGHT = 'right', 'east'
+NPC = ''
 
 solved_places = {'a1': False, 'a2': False, 'a3': False, 'a4': False, 'a5': False,
                  'b1': False, 'b2': False, 'b3': False, 'b4': False, 'b5': False,
@@ -90,11 +80,13 @@ zone_map = {
     'a1': {
         ZONENAME: 'The Nexus',
         DESCRIPTION: 'Hub area in the Realm of the Mad God and a safe zone from enemies.',
+        ITEMS: ['sword', 'shield'],
         SOLVED: False,
         UP: 'a2',
         DOWN: 'a3',
         LEFT: 'a4',
-        RIGHT: 'a5'
+        RIGHT: 'a5',
+        NPC: ''
     },
     'a2': {
         ZONENAME: 'Portal Room',
@@ -103,7 +95,8 @@ zone_map = {
         UP: '',
         DOWN: 'a1',
         LEFT: '',
-        RIGHT: ''
+        RIGHT: '',
+        NPC: ''
     },
     'a3': {
         ZONENAME: 'The Vault',
@@ -112,7 +105,8 @@ zone_map = {
         UP: 'a1',
         DOWN: '',
         LEFT: '',
-        RIGHT: ''
+        RIGHT: '',
+        NPC: ''
     },
     'a4': {
         ZONENAME: 'The Grand Bazaar',
@@ -121,7 +115,8 @@ zone_map = {
         UP: '',
         DOWN: 'a3',
         LEFT: '',
-        RIGHT: ''
+        RIGHT: '',
+        NPC: ''
     },
     'a5': {
         ZONENAME: '',
@@ -130,7 +125,8 @@ zone_map = {
         UP: '',
         DOWN: 'a3',
         LEFT: '',
-        RIGHT: ''
+        RIGHT: '',
+        NPC: ''
     },
     'b1': {
         ZONENAME: '',
@@ -139,7 +135,8 @@ zone_map = {
         UP: '',
         DOWN: 'a3',
         LEFT: '',
-        RIGHT: ''
+        RIGHT: '',
+        NPC: ''
     },
 
 }
@@ -148,25 +145,6 @@ zone_map = {
 def print_map():
     pass
 
-
-def start_game():
-    print("Please enter a name")
-    name = input("> ")
-    print()
-    while True:
-        print("Please choose a player class!")
-        print("Class options: " + str(classes))
-        char_class = input("> ")
-        if char_class.lower() not in classes:
-            print("Invalid Option")
-        else:
-            break
-
-    player.set_name(name)
-    player.set_class(char_class)
-    player.set_location('a1')
-    while True:
-        prompt()
 
 ##### GAME INTERACTIVITY #####
 
@@ -180,10 +158,11 @@ def print_location():
 
 def prompt():
     print('\n' + "==========================")
-    print('What would you like to do?')
+    question1 = 'What would you like to do?'
+    type_out(question1)
     action = input("> ")
     acceptable_actions = ['move', 'go', 'travel', 'walk', 'quit',
-                          'examine', 'inspect', 'interact', 'look', 'inventory']
+                          'examine', 'inspect', 'interact', 'look', 'inventory', 'commands', 'help', 'take', 'grab', 'pickup', 'pick up']
     while action.lower() not in acceptable_actions:
         print("Invalid Option! Try again.\n")
         action = input("> ")
@@ -192,7 +171,11 @@ def prompt():
     elif action.lower() in ['move', 'go', 'travel', 'walk']:
         move()
     elif action.lower() in ['examine', 'interact', 'inspect', 'look']:
-        player.examine()
+        examine()
+    elif action.lower() in ['take', 'grab', 'pickup', 'pick up']:
+        take()
+    elif action.lower() in ['commands', 'help']:
+        commands()
 
 
 def move():
@@ -215,6 +198,90 @@ def move():
 
 
 def examine():
+    if zone_map[player.location][SOLVED]:
+        print("There's nothing else here...")
+    else:
+        print("You can trigger a puzzle here")
+
+
+def take():
+    if zone_map[player.location][ITEMS] == []:
+        print("There's nothing here for you to take!\n")
+    else:
+        print("What would you like to take?")
+        take = input("> ")
+        while take not in zone_map[player.location][ITEMS]:
+            print("That item is not here...")
+            take = input("> ")
+        player.inventory.append(take)
+        zone_map[player.location][ITEMS].remove(take)
+        print("Picked up, a " + take)
+        print(player.inventory)
+        print(zone_map[player.location][ITEMS])
+
+
+def commands():
+    print()
+    travel_commands = ['move', 'go', 'travel', 'walk']
+    examine_commands = ['examine', 'inspect', 'interact', 'look']
+    q1 = "Here is a list of viable commands in the game world."
+    type_out(q1)
+    print("Travel commands: " + str(travel_commands))
+    print("Examine commands: " + str(examine_commands))
+    q2 = "And finally, remember you may always exit the program by typing 'quit'"
+    type_out(q2)
+
+
+def talk():
+    pass
+
+
+def drop():
+    if player.inventory == []:
+        print("You have no items in your inventory!")
+    pass
+
+
+def shop():
+    pass
+
+#### MAIN GAMEPLAY LOOP ####
+
+
+def type_out(phrase):
+    for character in phrase:
+        sys.stdout.write(character)
+        sys.stdout.flush()
+        time.sleep(0.05)
+    print()
+
+
+def start_game():
+    os.system('clear')
+    question1 = "What is your name?\n"
+    type_out(question1)
+
+    name = input("> ")
+    print()
+    question2 = "Please choose a player class!"
+    type_out(question2)
+    question3 = "You can play as a Knight, Wizard, or Archer."
+    type_out(question3)
+    char_class = input("> ")
+    while char_class.lower() not in classes:
+        print("Invalid Option")
+        char_class = input("> ")
+
+    player.set_name(name)
+    player.set_class(char_class)
+    player.set_location('a1')
+    print_location()
+    core_loop()
+
+
+def core_loop():
+    while True:
+        prompt()
     pass
 
 
