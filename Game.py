@@ -68,7 +68,7 @@ UP = 'up', 'north'
 DOWN = 'down', 'south'
 LEFT = 'left', 'west'
 RIGHT = 'right', 'east'
-NPC = ''
+NPC = 'npc'
 
 solved_places = {'a1': False, 'a2': False, 'a3': False, 'a4': False, 'a5': False,
                  'b1': False, 'b2': False, 'b3': False, 'b4': False, 'b5': False,
@@ -281,6 +281,8 @@ def start_game():
 
 def core_loop():
     while True:
+        if zone_map[player.location][NPC] != '':
+            type_out("There is an NPC here! type 'talk' to speak with them.")
         prompt()
     pass
 
