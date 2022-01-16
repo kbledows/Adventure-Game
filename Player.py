@@ -1,10 +1,10 @@
 class Character:
     def __init__(self):
-        self.name = ''
+        self.name = ""
         self.char_class = ''  # Wizard, Knight, or Archer
         self.gold = 100  # currency int type
-        self.maxHP = 100
-        self.maxMP = 50
+        self.hp_max = 100
+        self.mp_max = 50
         self.hp = 100
         self.mp = 50
         self.inventory = []  # player inventory (item objects)
@@ -42,6 +42,11 @@ class Character:
 
     def set_location(self, place):
         self.location = place
+
+
+class Inventory():
+    def __init__(self):
+        self.items = {}
 
 
 # Notes: Perhaps make a general class that is "Mob" with HP stat... could be useful.

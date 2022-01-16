@@ -91,6 +91,7 @@ zone_map = {
     'a2': {
         ZONENAME: 'Portal Room',
         DESCRIPTION: 'A glowing portal sits in the center of the room...',
+        ITEMS: [],
         SOLVED: False,
         UP: '',
         DOWN: 'a1',
@@ -101,6 +102,7 @@ zone_map = {
     'a3': {
         ZONENAME: 'The Vault',
         DESCRIPTION: 'A steel enclosed private area, with room to store items, gear, and access the pet yard. There is a soft glow eminating from a nearby fireplace.',
+        ITEMS: [],
         SOLVED: False,
         UP: 'a1',
         DOWN: '',
@@ -111,6 +113,7 @@ zone_map = {
     'a4': {
         ZONENAME: 'The Grand Bazaar',
         DESCRIPTION: 'A beautifully ornate room, large with many shopkeepers stocking various items. A scruffy looking man with a great beard sits behind the counter',
+        ITEMS: [],
         SOLVED: False,
         UP: '',
         DOWN: 'a3',
@@ -121,6 +124,7 @@ zone_map = {
     'a5': {
         ZONENAME: '',
         DESCRIPTION: 'description',
+        ITEMS: [],
         SOLVED: False,
         UP: '',
         DOWN: 'a3',
@@ -131,6 +135,7 @@ zone_map = {
     'b1': {
         ZONENAME: '',
         DESCRIPTION: 'description',
+        ITEMS: [],
         SOLVED: False,
         UP: '',
         DOWN: 'a3',
@@ -162,7 +167,7 @@ def prompt():
     type_out(question1)
     action = input("> ")
     acceptable_actions = ['move', 'go', 'travel', 'walk', 'quit',
-                          'examine', 'inspect', 'interact', 'look', 'inventory', 'commands', 'help', 'take', 'grab', 'pickup', 'pick up']
+                          'examine', 'inspect', 'interact', 'look', 'inventory', 'commands', 'help', 'take', 'grab', 'pickup', 'pick up', 'move down', 'down', 'south', 'move up', 'north', 'up', 'move left', 'left', 'west', 'east', 'move right', 'right']
     while action.lower() not in acceptable_actions:
         print("Invalid Option! Try again.\n")
         action = input("> ")
@@ -176,25 +181,66 @@ def prompt():
         take()
     elif action.lower() in ['commands', 'help']:
         commands()
+    elif action.lower() in ['move up', 'up', 'north']:
+        moveUp()
+    elif action.lower() in ['move down', 'down', 'south']:
+        moveDown()
+    elif action.lower() in ['move right', 'right', 'east']:
+        moveRight()
+    elif action.lower() in ['move left', 'west', 'left']:
+        moveLeft()
 
 
 def move():
     ask = "Where would you like to move to?\n"
     dest = input(ask)
+    while dest not in ['up', 'north', 'down', 'south', 'right', 'east', 'left', 'west']:
+        print("Invalid Direction!\n")
+        dest = input(ask)
     if dest in ['up', 'north']:
-        player.set_location(zone_map[player.location][UP])
-        print("You have moved to the " + zone_map[player.location][UP])
+        moveUp()
     elif dest in ['down', 'south']:
-        player.set_location(zone_map[player.location][DOWN])
-        print("You have moved to the " + zone_map[player.location][DOWN])
+        moveDown()
     elif dest in ['left', 'west']:
-        player.set_location(zone_map[player.location][LEFT])
-        print("You have moved to the " + zone_map[player.location][LEFT])
+        moveLeft()
     elif dest in ['right', 'east']:
+        moveRight()
+
+
+def moveUp():
+    if zone_map[player.location][UP] == '':
+        print("Cannot move there.")
+    else:
+        player.set_location(zone_map[player.location][UP])
+        print("You have moved to the " + zone_map[player.location][ZONENAME])
+        print_location()
+
+
+def moveDown():
+    if zone_map[player.location][DOWN] == '':
+        print("Cannot move there.")
+    else:
+        player.set_location(zone_map[player.location][DOWN])
+        print("You have moved to the " + zone_map[player.location][ZONENAME])
+        print_location()
+
+
+def moveLeft():
+    if zone_map[player.location][LEFT] == '':
+        print("Cannot move there.")
+    else:
+        player.set_location(zone_map[player.location][LEFT])
+        print("You have moved to the " + zone_map[player.location][ZONENAME])
+        print_location()
+
+
+def moveRight():
+    if zone_map[player.location][RIGHT] == '':
+        print("Cannot move there.")
+    else:
         player.set_location(zone_map[player.location][RIGHT])
-        print("You have moved to the " +
-              zone_map[player.location][RIGHT] + '\n')
-    print_location()
+        print("You have moved to the " + zone_map[player.location][ZONENAME])
+        print_location()
 
 
 def examine():
@@ -280,9 +326,12 @@ def start_game():
 
 
 def core_loop():
-    while True:
+    playing = True
+    while playing:
         if zone_map[player.location][NPC] != '':
-            type_out("There is an NPC here! type 'talk' to speak with them.")
+            type_out("There is an NPC here! type 'talk' to speak with them.\n")
+        if zone_map[player.location][ITEMS] != []:
+            type_out("There appear to be some items scattered about here.\n")
         prompt()
     pass
 
