@@ -93,7 +93,7 @@ zone_map = {
         DESCRIPTION: 'A glowing portal sits in the center of the room...',
         ITEMS: [],
         SOLVED: False,
-        UP: '',
+        UP: 'b1',
         DOWN: 'a1',
         LEFT: '',
         RIGHT: '',
@@ -116,29 +116,29 @@ zone_map = {
         ITEMS: [],
         SOLVED: False,
         UP: '',
-        DOWN: 'a3',
+        DOWN: '',
         LEFT: '',
-        RIGHT: '',
+        RIGHT: 'a1',
         NPC: ''
     },
     'a5': {
-        ZONENAME: '',
-        DESCRIPTION: 'description',
+        ZONENAME: 'Quest Room',
+        DESCRIPTION: 'A shoddy home, built of mud and brick.',
         ITEMS: [],
         SOLVED: False,
         UP: '',
         DOWN: 'a3',
         LEFT: '',
         RIGHT: '',
-        NPC: ''
+        NPC: 'Tinkerer'
     },
     'b1': {
-        ZONENAME: '',
-        DESCRIPTION: 'description',
+        ZONENAME: 'Beach',
+        DESCRIPTION: 'The shoreline, or shore, is the narrow area that makes up the outer edge of a realm. The shore area generally features sand with no vegetation and shallow water that eventually reaches the uncrossable deep waters of the ocean. Enemies found here are generally considered the least threatening.',
         ITEMS: [],
         SOLVED: False,
         UP: '',
-        DOWN: 'a3',
+        DOWN: 'a2',
         LEFT: '',
         RIGHT: '',
         NPC: ''
@@ -159,22 +159,30 @@ def print_location():
     print('# ' + zone_map[player.location][ZONENAME] + ' #')
     print(('#' * (4 + len(zone_map[player.location][ZONENAME])) + '\n'))
     print('# ' + zone_map[player.location][DESCRIPTION] + ' #')
+    print("===================================================")
+    if zone_map[player.location][NPC] != '':
+        type_out("There is an NPC here! type 'talk' to speak with them.")
+    if zone_map[player.location][ITEMS] != []:
+        type_out("There appear to be some items scattered about here.")
 
 
 def prompt():
-    print('\n' + "==========================")
+    print("===================================================")
     question1 = 'What would you like to do?'
     type_out(question1)
     action = input("> ")
     acceptable_actions = ['move', 'go', 'travel', 'walk', 'quit',
-                          'examine', 'inspect', 'interact', 'look', 'inventory', 'commands', 'help', 'take', 'grab', 'pickup', 'pick up', 'move down', 'down', 'south', 'move up', 'north', 'up', 'move left', 'left', 'west', 'east', 'move right', 'right']
+                          'examine', 'inspect', 'interact', 'look', 'inventory', 'commands', 'help', 'take', 'grab', 'pickup', 'pick up', 'move down', 'down', 'south', 'move up', 'north', 'up', 'move left', 'left', 'west', 'east', 'move right', 'right', 'talk']
     while action.lower() not in acceptable_actions:
         print("Invalid Option! Try again.\n")
         action = input("> ")
     if action.lower() == 'quit':
         sys.exit()
     elif action.lower() in ['move', 'go', 'travel', 'walk']:
-        move()
+        if player.state != 'normal':
+            print("You can't do that right now!")
+        else:
+            move()
     elif action.lower() in ['examine', 'interact', 'inspect', 'look']:
         examine()
     elif action.lower() in ['take', 'grab', 'pickup', 'pick up']:
@@ -266,14 +274,27 @@ def take():
         print(zone_map[player.location][ITEMS])
 
 
+def talk():
+    if zone_map[player.location][NPC] == []:
+        print("There's no one here for you to talk with!\n")
+    else:
+        if zone_map[player.location][NPC] == 'kreg':
+            shop()
+
+
 def commands():
     print()
-    travel_commands = ['move', 'go', 'travel', 'walk']
+    travel_commands = ['move', 'go', 'travel',
+                       'walk', 'up', 'left', 'right', 'down']
     examine_commands = ['examine', 'inspect', 'interact', 'look']
+    other_commands = ['talk', 'inventory']
     q1 = "Here is a list of viable commands in the game world."
     type_out(q1)
+    print("====================================")
     print("Travel commands: " + str(travel_commands))
     print("Examine commands: " + str(examine_commands))
+    print("Other commands: " + str(other_commands))
+    print("====================================")
     q2 = "And finally, remember you may always exit the program by typing 'quit'"
     type_out(q2)
 
@@ -289,7 +310,7 @@ def drop():
 
 
 def shop():
-    pass
+    print("Welcome to Kreg's store!")
 
 #### MAIN GAMEPLAY LOOP ####
 
@@ -321,6 +342,15 @@ def start_game():
     player.set_name(name)
     player.set_class(char_class)
     player.set_location('a1')
+    if player.char_class == 'knight':
+        player.set_hp(500)
+        player.set_max_hp(800)
+    elif player.char_class == 'wizard':
+        player.set_hp(400)
+        player.set_max_hp(700)
+    elif player.char_class == 'archer':
+        player.set_hp(450)
+        player.set_max_hp(750)
     print_location()
     core_loop()
 
@@ -328,12 +358,17 @@ def start_game():
 def core_loop():
     playing = True
     while playing:
-        if zone_map[player.location][NPC] != '':
-            type_out("There is an NPC here! type 'talk' to speak with them.\n")
-        if zone_map[player.location][ITEMS] != []:
-            type_out("There appear to be some items scattered about here.\n")
+        print_map()
         prompt()
-    pass
+    game_over()
+
+
+def game_over():
+    print("Congratulations! You beaten the game!")
+    print("Total Score: n/a")
+    print("Mobs killed: n/a")
+    time.sleep(2)
+    title_screen()
 
 
 def main():
